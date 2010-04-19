@@ -113,9 +113,10 @@ Address * GeoParser::parse_address(const string &str)
     else if (address_re->FullMatch(str))
     {
         Address *addr = new Address;
-	std::string suffix_str, direction_str;
-	address_re->FullMatch(str, &addr->number, &addr->street, &suffix_str, 
+	std::string num_str, suffix_str, direction_str;
+	address_re->FullMatch(str, &num_str, &addr->street, &suffix_str, 
 			     &direction_str, &addr->region);
+	addr->number = atoi(num_str.c_str());
 	addr->suffix = Address::get_suffix(suffix_str);
 	addr->direction = Address::get_direction(direction_str);
 
