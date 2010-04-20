@@ -1,10 +1,19 @@
-=== About ===
+== About ==
 
 neocoder is intended to be an extremely fast and versatile geocoding library, 
 offered under an extremely liberal license. It is not yet considered ready for
 general use.
 
-=== Building ===
+Currently it is capable of processing Canadian road data in the GML format, as
+produced by the Canadian Geobase organization (http://geobase.ca). Support for
+other formats and regions (in particular, the Tiger Line database produced by
+the U.S. government) is planned.
+
+Neocoder is written in C++ with bindings for other languages written in SWIG. 
+It currently only ships with bindings for the Python language, but it could
+be made to work with other languages (e.g. Ruby) fairly trivially.
+
+== Building ==
 
 You can build and install neocoder via the standard:
 
@@ -15,3 +24,63 @@ grab a package with the development headers via your distributions package
 manager (e.g. on Ubuntu Karmic the package is 'libpcre3-dev'). On MacOS X,
 just do a './configure && make && make install' after downloading and
 unpacking the libpcre distribution.
+
+== Using ==
+
+You currently have two options for using Neocoder: statically linking the library
+into your C/C++/Objective-C application or using the python bindings. Either
+way, you'll need to generate an SQLite database of the region you want to geocode,
+so I'll go through that first.
+
+=== Building a geodb ===
+
+1. Download some road data from geobase.ca for the region you want to geocode.
+Just sign up for a (free) account and go to the "National Road Network"
+source. You'll need road data with street name and address numbering
+information: I believe this presently includes all regions except Quebec,
+although I have only tested Nova Scotia and Alberta.
+
+2. Extract the data in some directory and make note of the file name containing
+the actual geometry information combined with addressing info. As of this writing,
+that should be a file that looks like this: NRN_*_GEOM.gml (the * should contain
+province name and versioning info).
+
+3. Convert the GML into a set of python dictionaries:
+
+   utils/gml2py-geobase.py <nrn file> <min lat> <min lng> <max lat> <max lng> > <python file>
+
+For example, I use this command line to extract the rough region for Edmonton
+from the Alberta geobase dataset:
+
+   utils/gml2py-geobase.py NRN_AB_6_0_GEOM.gml 53.412949 -113.934799 53.713699 -113.199875 > edmonton.py
+
+4. Convert the python dictionaries into an SQLite database:
+
+   utils/creategeodb.py <python file> <sqlite db>
+
+Following the example above, here's the invocation to convert the Edmonton
+python file into an Edmonton database.
+
+   utils/creategeodb.py edmonton.py edmonton.db
+
+=== Using a geodb ===
+
+The first point of testing is the handy "geocode" test program, which is
+actually useful by itself for converting an address into a latlng pair. Here's
+an example invocation (using Edmonton, Alberta as an example again):
+
+    tests/geocode edmonton.db "9718 153 street Northwest"
+
+When you're ready to start using neocoder in your own programs, you can can
+either link neocoder directly to your C/C++/Objective-C program or use the
+python bindings. For an example of the former, look at the project Makefile
+and see how we link the "geocode" utility. For the latter, run 'make install',
+set the python path appropriately, and import the library. E.g.:
+
+
+    export LD_LIBRARY_PATH=/usr/local/lib/python
+    python
+    >>> import neocoder
+    >>> g = neocoder.GeoCoder("edmonton.db")
+    >>> g.get_latlng("9718 153 street Northwest")
+
