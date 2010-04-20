@@ -63,7 +63,7 @@ if __name__ == '__main__':
         dict = eval(line)
         for side in [ dict["left"], dict["right"] ]:
             if side.get('name') and side['name'] != "Unknown":
-                if side['firstNumber'] > 0 and side['lastNumber'] > 0:
+                if side.get('firstNumber') and side.get('lastNumber') and side['firstNumber'] > 0 and side['lastNumber'] > 0:
                     even = 0
                     if side['firstNumber'] % 2 == 0:
                         even = 1
@@ -86,7 +86,7 @@ if __name__ == '__main__':
                     
                     suffix_type = 0 # unknown
                     direction = 0 # unknown
-                    if mappings.suffix_dict.get(side['suffix'].lower()):
+                    if side.get('suffix') and mappings.suffix_dict.get(side['suffix'].lower()):
                         suffix_type = mappings.suffix_dict[side['suffix'].lower()]
                     if side.get('direction') and mappings.direction_dict.get(side['direction'].lower()):
                         direction = mappings.direction_dict[side['direction'].lower()]
@@ -118,15 +118,21 @@ if __name__ == '__main__':
                         if name1 and name2 and name1 != name2:
                             if name1 > name2:
                                 roadseg1, roadseg2 = roadseg2, roadseg1
-                                    
-                            intersection_key = name1+roadseg1['suffix']+","+name2+roadseg2['suffix']
+                            
+                            (suffix1, suffix2) = ("", "")
+                            if roadseg1.get('suffix'):
+                                suffix1 = roadseg1.get('suffix')
+                            if roadseg2.get('suffix'):
+                                suffix2 = roadseg2.get('suffix')
+
+                            intersection_key = name1+suffix1+","+name2+suffix2
                             if not intersections_inserted.get(intersection_key):
                                 cursor.execute("insert into intersection " \
                                                    "values ('%s', '%s', '%s', '%s', '%s', '%s', '%s');" % 
                                                (name1.replace("'", "''"), 
-                                                roadseg1['suffix'].replace("'", "''"), 
+                                                suffix1.replace("'", "''"), 
                                                 name2.replace("'", "''"), 
-                                                roadseg2['suffix'].replace("'", "''"), 
+                                                suffix2.replace("'", "''"), 
                                                 roadseg1['placeName'], lat, lng))
                                 intersections_inserted[intersection_key] = 1
 
