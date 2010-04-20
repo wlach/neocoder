@@ -144,14 +144,9 @@ pair<float, float> * GeoCoder::get_latlng(const char *str)
 
     string lat, lng;
     if (latlng_re.FullMatch(str, &lat, &lng))
-    {
-        string lat, lng;
-        lat.assign(what[1].first, what[1].second);
-        lng.assign(what[2].first, what[2].second);
         return new pair<float, float>(atof(lat.c_str()), atof(lng.c_str()));
-    }
-    Address *addr = parser->parse_address(str);
 
+    Address *addr = parser->parse_address(str);
     if (addr && addr->is_intersection())
     {
         pair<float, float> *latlng = NULL;
