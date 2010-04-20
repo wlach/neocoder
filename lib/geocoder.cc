@@ -12,6 +12,13 @@ using namespace std::tr1;
 
 static string LATLNG_REGEX = "^(-?[0-9]+(?:\\.[0-9]+)?)\\ *,\\ *(-?[0-9]+(?:\\.[0-9]+)?)$";
 
+// set to 1 to see debugging info (rather verbose)
+#if 0
+# define NEODEBUG(fmt, args...) fprintf(stderr, fmt, ## args)
+#else
+# define NEODEBUG
+#endif
+
 
 static inline double radians(double degrees)
 {
@@ -168,7 +175,7 @@ pair<float, float> * GeoCoder::get_latlng(const char *str)
         sqlstr << " limit 1";
 
         char *zErrMsg = 0;
-        printf("SQL: %s\n", sqlstr.str().c_str());
+        NEODEBUG("SQL: %s\n", sqlstr.str().c_str());
         
         int rc = sqlite3_exec(db, sqlstr.str().c_str(), sqlite_intersection_cb, 
                               &latlng, &zErrMsg);
@@ -213,7 +220,7 @@ pair<float, float> * GeoCoder::get_latlng(const char *str)
         sqlstr << "limit 1";
 
         char *zErrMsg = 0;
-        printf("SQL: %s\n", sqlstr.str().c_str());
+        NEODEBUG("SQL: %s\n", sqlstr.str().c_str());
         int rc = sqlite3_exec(db, sqlstr.str().c_str(), sqlite_address_cb, 
                               &addr_tuple, &zErrMsg);
         if (rc != SQLITE_OK)
