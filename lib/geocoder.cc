@@ -1,6 +1,7 @@
 #include "geocoder.h"
 #include "address.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <sqlite3.h>
