@@ -11,7 +11,8 @@ install-python: python/neocoder/_geocoder.so python/neocoder/__init__.py
 
 install-util: utils/creategeodb.py
 	$(INSTALL) -d $(DESTDIR)$(bindir)
-	$(INSTALL) utils/gml2py.py $(DESTDIR)$(bindir)
+	$(INSTALL) utils/gml2py-statscan.py $(DESTDIR)$(bindir)
+	$(INSTALL) utils/gml2py-geobase.py $(DESTDIR)$(bindir)
 	$(INSTALL) utils/creategeodb.py $(DESTDIR)$(bindir)
 
 
