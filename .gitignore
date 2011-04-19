@@ -10,6 +10,10 @@ config.status
 configure
 geocode
 geoparser.cc
+libneocoder.so
+python/neocoder/__init__.py
+python/neocoder/_geocoder.so
+python/neocoder/geocoder_wrap_py.cc
 t/all.t
 utils/mappings.py
 utils/mappings.pyc
